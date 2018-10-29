@@ -2,12 +2,16 @@ package com.example.bhanuka.sqlitetest;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.ContentObservable;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import static android.content.ContentValues.TAG;
+
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    public static final String DATABASE_NAME = "mobileDB";
+    public static final String DATABASE_NAME = "mobileDB.db";
     public static final String TABLE_NAME = "transactions";
     public static final String COL_1 = "transaction_id";
     public static final String COL_2 = "account_number";
@@ -20,17 +24,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
+        System.out.println("database created :" + DATABASE_NAME);
+        Log.d(TAG, "onUpgrade: on constructor");
 
     }
 
+
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table " + TABLE_NAME + " (transaction_id INTEGER PRIMARY KEY AUTOINCREMENT, account_number INTEGER, type TEXT, date DATE, time TIME, amount INTEGER, details TEXT)");
-
+        System.out.println("trying to create table");
+        Log.d(TAG, "onUpgrade: on create1");
+        db.execSQL("create table " + TABLE_NAME + "(transaction_id INTEGER PRIMARY KEY AUTOINCREMENT, account_number INTEGER, type TEXT, date TEXT, time TEXT, amount INTEGER, details TEXT)");
+        System.out.println("table created :" + TABLE_NAME);
+        Log.d(TAG, "onUpgrade: on create");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
         db.execSQL("drop table if exists " + TABLE_NAME );
         onCreate(db);
     }
@@ -49,7 +60,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return false;
         else
             return true;
+    }
 
-
+    public Cursor getAllData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String q = "SELECT * FROM " + TABLE_NAME;
+        Cursor mCursor = db.rawQuery(q, null);
+        return mCursor;
     }
 }
