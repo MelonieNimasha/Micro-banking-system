@@ -25,18 +25,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
         System.out.println("database created :" + DATABASE_NAME);
-        Log.d(TAG, "onUpgrade: on constructor");
-
     }
 
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        System.out.println("trying to create table");
-        Log.d(TAG, "onUpgrade: on create1");
         db.execSQL("create table " + TABLE_NAME + "(transaction_id INTEGER PRIMARY KEY AUTOINCREMENT, account_number INTEGER, type TEXT, date TEXT, time TEXT, amount INTEGER, details TEXT)");
-        System.out.println("table created :" + TABLE_NAME);
-        Log.d(TAG, "onUpgrade: on create");
+
     }
 
     @Override
