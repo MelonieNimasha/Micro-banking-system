@@ -21,6 +21,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_6 = "amount";
     public static final String COL_7 = "details";
 
+    public static final String TABLE_ACCOUNTS = "accounts";
+    public static final String COL_8 = "customer_NIC";
+    public static final String COL_9 = "account_type";
+    public static final String COL_10 = "status";
+    public static final String COL_11 = "current_balance";
+    public static final String COL_12 = "account_details";
+
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -30,14 +37,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table " + TABLE_NAME + "(transaction_id INTEGER PRIMARY KEY AUTOINCREMENT, account_number INTEGER, type TEXT, date TEXT, time TEXT, amount INTEGER, details TEXT)");
-
+        db.execSQL("create table " + TABLE_NAME + "(transaction_id INTEGER PRIMARY KEY AUTOINCREMENT, account_number INTEGER REFERENCES accounts(account_number), type TEXT, date TEXT, time TEXT, amount INTEGER, details TEXT)");
+        db.execSQL("create table " + TABLE_ACCOUNTS + "(account_number INTEGER PRIMARY KEY, customer_NIC TEXT, account_type TEXT, status TEXT, current_balance INTEGER, account_details TEXT)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         db.execSQL("drop table if exists " + TABLE_NAME );
+        db.execSQL("drop table if exists " + TABLE_ACCOUNTS );
         onCreate(db);
     }
 
@@ -57,9 +65,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
     }
 
+    public boolean insertToAccounts(String account_number, String customer_NIC, String account_type, String status, String current_balance, String account_details){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_2, account_number);
+        contentValues.put(COL_8, customer_NIC);
+        contentValues.put(COL_9, account_type);
+        contentValues.put(COL_10, status);
+        contentValues.put(COL_11, current_balance);
+        contentValues.put(COL_12, account_details);
+        long insert = db.insert(TABLE_ACCOUNTS, null, contentValues);
+        if (insert == -1)
+            return false;
+        else
+            return true;
+    }
+
     public Cursor getAllData() {
         SQLiteDatabase db = this.getWritableDatabase();
         String q = "SELECT * FROM " + TABLE_NAME;
+        Cursor mCursor = db.rawQuery(q, null);
+        return mCursor;
+    }
+
+    public Cursor getAccounts() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String q = "SELECT * FROM " + TABLE_ACCOUNTS;
         Cursor mCursor = db.rawQuery(q, null);
         return mCursor;
     }

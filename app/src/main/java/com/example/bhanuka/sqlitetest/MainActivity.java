@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
     EditText edit_account_number, edit_type, edit_date, edit_time, edit_amount, edit_details;
     Button button_submit;
     Button viewdata;
+    Button viewAccounts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +33,15 @@ public class MainActivity extends AppCompatActivity {
         edit_details = (EditText)findViewById(R.id.editText_details);
         button_submit = (Button) findViewById(R.id.button_submit);
         viewdata = (Button) findViewById(R.id.button_viewdata);
+        viewAccounts = (Button) findViewById(R.id.button_account_data);
         AddData();
         viewData();
+
+        //insert data to account
+        AddToAccounts("1234", "962232531v","savings", "ok","45000","good account");
+        AddToAccounts("9632", "975423641v","fixed", "ok","23000","good account");
+        AddToAccounts("4789", "962145213x","joint", "ok","10000","good account");
+        viewAccounts();
     }
 
     public void AddData(){
@@ -54,6 +62,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+    }
+
+    public void AddToAccounts(String account_number, String customer_NIC, String account_type, String status, String current_balance, String account_details){
+        boolean isInserted = myDB.insertToAccounts(account_number, customer_NIC, account_type, status, current_balance, account_details);
+        if (isInserted = true)
+            System.out.println("succefully added to accounts");
+        else
+            System.out.println("error occured");
     }
 
     public void viewData(){
@@ -85,6 +101,34 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
+    public void viewAccounts(){
+        viewAccounts.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Cursor result = myDB.getAccounts();
+                        if (result.getCount() == 0) {
+                            showMessage("Error", "Nothing found");
+                            return;
+                        }
+
+                        StringBuffer buffer = new StringBuffer();
+                        while (result.moveToNext()){
+                            buffer.append("Account number : " + result.getString(0) + "\n");
+                            buffer.append("Type : " + result.getString(1) + "\n");
+                            buffer.append("Status :" + result.getString(2) + "\n");
+                            buffer.append("Current balance :" + result.getString(3) + "\n");
+                            buffer.append("Account details :" + result.getString(4) + "\n\n");
+                        }
+
+                        showMessage("Accounts",buffer.toString());
+                    }
+
+                }
+        );
+
+    }
+
     public void showMessage(String title, String message){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
@@ -92,6 +136,5 @@ public class MainActivity extends AppCompatActivity {
         builder.setMessage(message);
         builder.show();
     }
-
 
 }
