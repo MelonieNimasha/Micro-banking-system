@@ -13,7 +13,7 @@ import static android.widget.Toast.makeText;
 
 public class MainActivity extends AppCompatActivity {
     DatabaseHelper myDB;
-    EditText edit_account_number, edit_type, edit_date, edit_time, edit_amount, edit_details;
+    EditText edit_account_number, edit_type, edit_date, edit_time, edit_amount, edit_details, edit_charges;
     Button button_submit;
     Button viewdata;
     Button viewAccounts;
@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         edit_time = (EditText)findViewById(R.id.editText_time);
         edit_amount = (EditText)findViewById(R.id.editText_amount);
         edit_details = (EditText)findViewById(R.id.editText_details);
+        edit_charges = (EditText)findViewById(R.id.editText_charges);
         button_submit = (Button) findViewById(R.id.button_submit);
         viewdata = (Button) findViewById(R.id.button_viewdata);
         viewAccounts = (Button) findViewById(R.id.button_account_data);
@@ -49,12 +50,15 @@ public class MainActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        boolean isInserted = myDB.insertData(edit_account_number.getText().toString(),
+                        boolean isInserted = myDB.insertData(
+                                edit_account_number.getText().toString(),
                                 edit_type.getText().toString(),
                                 edit_date.getText().toString(),
                                 edit_time.getText().toString(),
                                 edit_amount.getText().toString(),
-                                edit_details.getText().toString());
+                                edit_details.getText().toString(),
+                                edit_charges.getText().toString());
+
                         if (isInserted = true) {
                             makeText(MainActivity.this,"Data inserted",Toast.LENGTH_LONG).show();
                         } else
@@ -65,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void AddToAccounts(String account_number, String customer_NIC, String account_type, String status, String current_balance, String account_details){
-        boolean isInserted = myDB.insertToAccounts(account_number, customer_NIC, account_type, status, current_balance, account_details);
-        if (isInserted = true)
+        boolean inserted = myDB.insertToAccounts(account_number, customer_NIC, account_type, status, current_balance, account_details);
+        if (inserted = true)
             System.out.println("succefully added to accounts");
         else
             System.out.println("error occured");
@@ -92,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                             buffer.append("Time :" + result.getString(4) + "\n");
                             buffer.append("Amount :" + result.getString(5) + "\n");
                             buffer.append("Details :" + result.getString(6) + "\n\n");
+                            //buffer.append("charges :" + result.getString(7) + "\n\n");
                         }
 
                         showMessage("Data",buffer.toString());
@@ -100,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
     }
-
     public void viewAccounts(){
         viewAccounts.setOnClickListener(
                 new View.OnClickListener() {
@@ -126,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
 
                 }
         );
-
     }
 
     public void showMessage(String title, String message){

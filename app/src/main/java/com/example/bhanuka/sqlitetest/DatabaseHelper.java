@@ -20,36 +20,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_5 = "time";
     public static final String COL_6 = "amount";
     public static final String COL_7 = "details";
+    public static final String COL_8 = "charges";
 
     public static final String TABLE_ACCOUNTS = "accounts";
-    public static final String COL_8 = "customer_NIC";
-    public static final String COL_9 = "account_type";
-    public static final String COL_10 = "status";
-    public static final String COL_11 = "current_balance";
-    public static final String COL_12 = "account_details";
+    public static final String COL_9 = "customer_NIC";
+    public static final String COL_10 = "account_type";
+    public static final String COL_11 = "status";
+    public static final String COL_12 = "current_balance";
+    public static final String COL_13 = "account_details";
 
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
-        System.out.println("database created :" + DATABASE_NAME);
     }
 
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table " + TABLE_NAME + "(transaction_id INTEGER PRIMARY KEY AUTOINCREMENT, account_number INTEGER REFERENCES accounts(account_number), type TEXT, date TEXT, time TEXT, amount INTEGER, details TEXT)");
         db.execSQL("create table " + TABLE_ACCOUNTS + "(account_number INTEGER PRIMARY KEY, customer_NIC TEXT, account_type TEXT, status TEXT, current_balance INTEGER, account_details TEXT)");
+
+        db.execSQL("create table " + TABLE_NAME + "(" +
+                "transaction_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "account_number INTEGER REFERENCES accounts(account_number), " +
+                "type TEXT, " +
+                "date TEXT, " +
+                "time TEXT, " +
+                "amount INTEGER, " +
+                "details TEXT, " +
+                "charges INTEGER" +
+                ")");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-        db.execSQL("drop table if exists " + TABLE_NAME );
         db.execSQL("drop table if exists " + TABLE_ACCOUNTS );
+        db.execSQL("drop table if exists " + TABLE_NAME );
         onCreate(db);
     }
 
-    public boolean insertData(String account_number, String type, String date, String time, String amount, String details){
+    public boolean insertData(String account_number, String type, String date, String time, String amount, String details, String charges){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_2, account_number);
@@ -58,22 +67,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL_5, time);
         contentValues.put(COL_6, amount);
         contentValues.put(COL_7, details);
-        long insert = db.insert(TABLE_NAME, null, contentValues);
-        if (insert == -1)
-            return false;
-        else
-            return true;
+        //contentValues.put(COL_8, charges);
+        long isInsert = db.insert(TABLE_NAME, null, contentValues);
+        return isInsert != -1;
     }
 
     public boolean insertToAccounts(String account_number, String customer_NIC, String account_type, String status, String current_balance, String account_details){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_2, account_number);
-        contentValues.put(COL_8, customer_NIC);
-        contentValues.put(COL_9, account_type);
-        contentValues.put(COL_10, status);
-        contentValues.put(COL_11, current_balance);
-        contentValues.put(COL_12, account_details);
+        contentValues.put(COL_9, customer_NIC);
+        contentValues.put(COL_10, account_type);
+        contentValues.put(COL_11, status);
+        contentValues.put(COL_12, current_balance);
+        contentValues.put(COL_13, account_details);
         long insert = db.insert(TABLE_ACCOUNTS, null, contentValues);
         if (insert == -1)
             return false;
